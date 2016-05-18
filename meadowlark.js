@@ -1,42 +1,37 @@
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
+var express = require('express');
+var handlebars =
+  require('express-handlebars')
+  .create({ defaultLayout: 'main' });
 
-http
-  .createServer(function(req, res) {
-    var currentUrl = url.parse(req.url);
+var app = express();
 
-    switch(currentUrl.pathname) {
-      case '/':
-        serveStaticFile(res, '/public/home.html', 'text/html');
-        break;
-      case '/about':
-        serveStaticFile(res, '/public/about.html', 'text/html');
-        break;
-      case '/img/logo.png':
-        serveStaticFile(res, '/public/img/logo.png', 'image/png');
-        break;
-      default:
-        serveStaticFile(res, '/public/notfound.html', 'text/html', 404);
-        break;
-    }
-  })
-  .listen(3000)
-  .on('listening', function() {
-    console.log('Listening!');
-  });
+app.set('port', process.env.PORT || 8000);
+app.engine('handlebars', handlebars.engine);
+app.set('view engine', 'handlebars');
 
 
-function serveStaticFile (res, path, contentType, responseCode) {
-  responseCode = responseCode || 200;
+// Home
+app.get('/', function(req, res) {
+  res.render('home')
+})
 
-  fs.readFile(__dirname + path, function(err, data) {
-    if (err) {
-      res.writeHead(500, { 'Content-Type': 'text-plain' });
-      res.end('500 - Error reading file')
-    } else {
-      res.writeHead(responseCode, { 'Content-Type': contentType });
-      res.end(data);
-    }
-  })
-}
+// About
+app.get('/about', function(req, res, next) {
+  res.render('about')
+})
+
+// Custom 404 page
+app.use(function(err, req, res, next) {
+  res.status(404)
+     .render('404');
+});
+
+// Custom 500 page
+app.use(function(req, res) {
+  res.status(500)
+     .render('500');
+});
+
+app.listen(app.get('port'), function() {
+  console.log('Started listening!');
+});
