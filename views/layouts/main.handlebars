@@ -6,7 +6,6 @@
   {{#if showTests}}
     <link rel="stylesheet" href="/vendor/mocha.css" >
   {{/if}}
-  <script src="//code.jquery.com/jquery-2.0.2.min.js" charset="utf-8"></script>
 </head>
 
 <body>
@@ -15,6 +14,10 @@
   </header>
 
   {{{body}}}
+
+  <script src="//code.jquery.com/jquery-2.0.0.min.js"></script>
+  <script>window.jQuery || document.write('<script src="/vendor/js/jquery-2.0.0.min.js"><\/script>')</script>
+  {{{_sections.jquery}}}
 
   {{#if showTests}}
     <div id="mocha"></div>
