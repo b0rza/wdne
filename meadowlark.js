@@ -24,12 +24,12 @@ app.set('view engine', 'handlebars');
 app.use(function(req, res, next) {
   res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
   next();
-})
+});
 
 // Home
 app.get('/', function(req, res) {
-  res.render('home')
-})
+  res.render('home');
+});
 
 // About
 app.get('/about', function(req, res) {
@@ -37,7 +37,7 @@ app.get('/about', function(req, res) {
     fortune: fortune.getFortune(),
     pageTestScript: '/qa/tests-about.js'
   });
-})
+});
 
 // Tours
 app.get('/tours/hood-river', function(req, res) {
