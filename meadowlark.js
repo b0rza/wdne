@@ -4,7 +4,7 @@ var fortune = require('./lib/fortune.js');
 // Config
 var app = express();
 app.use(express.static(__dirname + '/public'));
-app.set('port', process.env.PORT || 8000);
+app.set('port', process.env.PORT || 3000);
 
 // Handlebars
 var handlebars = require('express-handlebars')
@@ -24,7 +24,7 @@ app.get('/', function(req, res) {
 })
 
 // About
-app.get('/about', function(req, res, next) {
+app.get('/about', function(req, res) {
   res.render('about', {
     fortune: fortune.getFortune(),
     pageTestScript: '/qa/tests-about.js'
@@ -32,13 +32,13 @@ app.get('/about', function(req, res, next) {
 })
 
 // Custom 404 page
-app.use(function(err, req, res, next) {
+app.use(function(req, res, next) {
   res.status(404)
      .render('404');
 });
 
 // Custom 500 page
-app.use(function(req, res) {
+app.use(function(err, req, res, next) {
   res.status(500)
      .render('500');
 });
