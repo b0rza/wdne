@@ -3,6 +3,7 @@ var fortune = require('./lib/fortune.js');
 var bodyParser = require('body-parser');
 var formidable = require('formidable');
 var jqupload = require('jquery-file-upload-middleware');
+var credentials = require('./credentials.js');
 
 // Config
 var app = express();
@@ -23,6 +24,9 @@ var handlebars = require('express3-handlebars').create({
 });
 app.engine('hbs', handlebars.engine);
 app.set('view engine', 'hbs');
+
+// Cookies
+app.use(require('cookie-parser')(credentials.cookieSecret));
 
 function getWeatherData(){
   return {
@@ -105,6 +109,11 @@ app.use(function(req, res, next) {
 
 // Home
 app.get('/', function(req, res) {
+  res.cookie('monster', 'nom nom', { path: '/about' });
+  res.cookie('signed_monster', 'nom nom', { signed: true });
+
+  console.log(req.cookies);
+  console.log(req.signedCookies);
   res.render('home');
 });
 
@@ -139,19 +148,6 @@ app.get('/data/nursery-rhyme', function(req, res) {
     noun: 'heck'
   });
 });
-
-// jQuery upload
-app.use('/upload', function(req, res, next) {
-  var now = Date.now();
-  jqupload.fileHandler({
-    uploadDir: function() {
-      return __dirname + '/public/uploads' + now;
-    },
-    uploadUrl: function() {
-      return '/uploads/' + now;
-    }
-  })(req, res, next);
-})
 
 // Custom 404 page
 app.use(function(req, res, next) {
