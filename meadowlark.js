@@ -2,6 +2,7 @@ var express = require('express');
 var fortune = require('./lib/fortune.js');
 var bodyParser = require('body-parser');
 var formidable = require('formidable');
+var jqupload = require('jquery-file-upload-middleware');
 
 // Config
 var app = express();
@@ -90,8 +91,8 @@ app.post('/contest/vacation-photo/:year/:month', function(req, res) {
     if(err) return res.redirect(303, '/error');
     console.log('received fields: ');
     console.log(fields);
-    console.log('received files: ');
-    console.log(files);
+    console.log('received params: ');
+    console.log(req.params);
     res.redirect(303, '/thank-you');
   })
 })
@@ -137,6 +138,19 @@ app.get('/data/nursery-rhyme', function(req, res) {
     adjective: 'bushy',
     noun: 'heck'
   });
+});
+
+// jQuery upload
+app.use('/upload', function(req, res, next) {
+  var now = Date.now();
+  jqupload.fileHandler({
+    uploadDir: function() {
+      return __dirname + '/public/uploads' + now;
+    },
+    uploadUrl: function() {
+      return '/uploads/' + now;
+    }
+  })(req, res, next);
 })
 
 // Custom 404 page
