@@ -20,9 +20,12 @@ module.exports = function(grunt) {
     },
     exec: {
       linkchecker: { cmd: 'linkchecker http://localhost:3000' }
+    },
+    bootstrap: {
+      all: { 'node_modules/bootstrap/js/*.js' }
     }
   });
 
   // register tasks
-  grunt.registerTask('default', ['cafemocha', 'jshint', 'exec']);
+  grunt.registerTask('default', ['cafemocha', 'jshint', 'exec', 'bootstrap']);
 };
