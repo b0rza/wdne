@@ -4,6 +4,8 @@ var bodyParser = require('body-parser');
 var formidable = require('formidable');
 var jqupload = require('jquery-file-upload-middleware');
 var credentials = require('./credentials.js');
+var cartValidation = require('./lib/cartValidation.js');
+var nodemailer = require('nodemailer');
 
 // Config
 var app = express();
@@ -24,6 +26,15 @@ var handlebars = require('express3-handlebars').create({
 });
 app.engine('hbs', handlebars.engine);
 app.set('view engine', 'hbs');
+
+// Mailer
+var mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: credentials.gmail.user,
+    pass: credentials.gmail.password
+  }
+});
 
 // Cookies and Sessions
 app.use(require('cookie-parser')(credentials.cookieSecret));
@@ -76,6 +87,25 @@ app.use(bodyParser.urlencoded({
 // Newsletter
 app.get('/newsletter', function(req, res) {
   res.render('newsletter', { csrf: 'dummy csrf' });
+});
+
+// Send email
+app.get('/email', function(req, res) {
+
+  console.log(req.query);
+
+  mailTransport.sendMail({
+    from: 'Meadowlar <info@meadowlark.com>',
+    to: 'aborzic@extensionengine.com',
+    subject: 'Your tour',
+    text: req.query.text || 'Generic text'
+  }, function(err) {
+    if(err){
+      console.log('Unable to send email: ' + err);
+    }
+  });
+
+  res.end('Tried!');
 });
 
 app.post('/newsletter', function(req, res){
