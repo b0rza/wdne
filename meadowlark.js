@@ -11,6 +11,16 @@ var nodemailer = require('nodemailer');
 var app = express();
 app.use(express.static(__dirname + '/public'));
 app.set('port', process.env.PORT || 3000);
+switch(app.get('env')){
+  case 'development':
+    app.use(require('morgan')('dev'));
+    break;
+  case 'production':
+    app.use(require('express-logger')({
+      path: __dirname + '/log/requests.log'
+    }));
+    break;
+}
 
 // Handlebars
 var handlebars = require('express3-handlebars').create({
@@ -98,7 +108,7 @@ app.get('/email', function(req, res) {
     from: 'Meadowlar <info@meadowlark.com>',
     to: 'aborzic@extensionengine.com',
     subject: 'Your tour',
-    text: req.query.text || 'Generic text'
+    html: '<h1>' + (req.query.text || 'Generic text') + '</h1><img src="http://localhost:3000/email/logo.png">'
   }, function(err) {
     if(err){
       console.log('Unable to send email: ' + err);
